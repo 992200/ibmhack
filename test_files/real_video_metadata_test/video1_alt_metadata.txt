@@ -1,0 +1,8 @@
+Title: Awesome Movie
+Duration: 00:03:00
+Resolution: 320x240
+Format: MP4
+Codec: H.264
+Bitrate: 1000 kbps
+FPS: 30
+File Size: 1.2 MB

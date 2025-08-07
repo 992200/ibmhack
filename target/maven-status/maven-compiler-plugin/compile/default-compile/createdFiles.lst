@@ -1,0 +1,17 @@
+com\example\appmanager\config\SecurityConfig.class
+com\example\appmanager\config\SecurityConfig$1.class
+com\example\appmanager\ApplicationManagerApplication.class
+com\example\appmanager\model\ApplicationFile.class
+com\example\appmanager\service\UserService.class
+com\example\appmanager\model\User.class
+com\example\appmanager\repository\RuleRepository.class
+com\example\appmanager\service\RuleCategorizationService.class
+com\example\appmanager\model\Category.class
+com\example\appmanager\model\Rule.class
+com\example\appmanager\service\FileScannerService.class
+com\example\appmanager\repository\UserRepository.class
+com\example\appmanager\repository\CategoryRepository.class
+com\example\appmanager\repository\ApplicationFileRepository.class
+com\example\appmanager\controller\ApplicationManagerController.class
+com\example\appmanager\service\DuplicateDetectorService.class
+com\example\appmanager\controller\AuthController.class

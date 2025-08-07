@@ -1,0 +1,8 @@
+Title: Red to Blue Gradient
+Duration: 00:03:00
+Resolution: 320x240
+Format: MP4
+Codec: H.264
+Bitrate: 1000 kbps
+FPS: 10
+Content: Color gradient animation

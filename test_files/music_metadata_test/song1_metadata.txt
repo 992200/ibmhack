@@ -1,0 +1,6 @@
+Title: My Favorite Song
+Artist: Test Artist
+Album: Test Album
+Year: 2024
+Genre: Pop
+Duration: 3:00

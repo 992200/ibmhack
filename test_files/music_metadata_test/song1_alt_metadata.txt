@@ -1,0 +1,6 @@
+Title: Awesome Track
+Artist: Test Artist
+Album: Greatest Hits
+Year: 2024
+Genre: Pop
+Duration: 3:00

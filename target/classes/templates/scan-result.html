@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Scan Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-section {
+            padding: 40px 0;
+            text-align: center;
+            color: white;
+        }
+        .results-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .table {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .table thead th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+        }
+        .table tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+        .btn {
+            border-radius: 10px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .file-size {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .category-badge {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1 class="display-4 mb-3">
+                <i class="fas fa-search me-3"></i>
+                Scan Results
+            </h1>
+            <p class="lead">Files found and categorized</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <h3 class="mb-2">
+                        <i class="fas fa-file me-2"></i>
+                        <span th:text="${#lists.size(files)}">0</span>
+                    </h3>
+                    <p class="mb-0">Total Files</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <h3 class="mb-2">
+                        <i class="fas fa-folder me-2"></i>
+                        <span th:text="${#lists.size(files.?[category != null])}">0</span>
+                    </h3>
+                    <p class="mb-0">Categorized</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <h3 class="mb-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span th:text="${#lists.size(files.?[category == null])}">0</span>
+                    </h3>
+                    <p class="mb-0">Uncategorized</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <h3 class="mb-2">
+                        <i class="fas fa-hdd me-2"></i>
+                        <span th:with="totalSize=${#lists.size(files) > 0 ? #aggregates.sum(files.![size]) : 0}"
+                              th:text="${#numbers.formatDecimal(totalSize / 1024 / 1024, 1, 2)}">0</span> MB
+                    </h3>
+                    <p class="mb-0">Total Size</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="scan-card">
+            <div class="text-center mb-4">
+                <h2 class="display-5 mb-3">
+                    <i class="fas fa-search me-3"></i>
+                    Scan Results
+                </h2>
+                <p class="lead">Found <span th:text="${#lists.size(files)}" class="fw-bold text-primary"></span> files</p>
+            </div>
+
+            <!-- Categorization Summary -->
+            <div th:if="${categorizationEnabled}" class="categorization-summary mb-4">
+                <div class="alert alert-info">
+                    <h5><i class="fas fa-tags me-2"></i>File Categorization Applied</h5>
+                    <p class="mb-2">Files have been organized into the following categories:</p>
+                    <div class="row">
+                        <div class="col-md-6" th:each="category : ${selectedCategories}">
+                            <span class="badge bg-primary me-2" th:text="${category}"></span>
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Files have been moved to category folders in the scanned directory.
+                    </small>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Scanned Files
+                </h3>
+                <a th:href="@{/duplicates}" class="btn btn-primary">
+                    <i class="fas fa-copy me-2"></i>
+                    View Duplicates
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-file me-2"></i>Name</th>
+                            <th><i class="fas fa-map-marker-alt me-2"></i>Path</th>
+                            <th><i class="fas fa-weight-hanging me-2"></i>Size</th>
+                            <th><i class="fas fa-tags me-2"></i>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="file : ${files}">
+                            <td>
+                                <i class="fas fa-file me-2"></i>
+                                <span th:text="${file.name}"></span>
+                            </td>
+                            <td>
+                                <small class="text-muted" th:text="${file.path}"></small>
+                            </td>
+                            <td>
+                                <span class="file-size" 
+                                      th:text="${#numbers.formatDecimal(file.size / 1024, 1, 1) + ' KB'}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${file.category != null}" 
+                                      class="category-badge" 
+                                      th:text="${file.category.name}"></span>
+                                <span th:unless="${file.category != null}" 
+                                      class="text-muted">Uncategorized</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/}" class="btn btn-secondary me-3">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Home
+            </a>
+            <a th:href="@{/duplicates}" class="btn btn-primary">
+                <i class="fas fa-copy me-2"></i>
+                View Duplicates
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

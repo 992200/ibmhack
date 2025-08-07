@@ -1,0 +1,5 @@
+#EXTM3U
+#EXTINF:180,Test Video - My Video
+../real_video_test_files/video1.mp4
+#EXTINF:180,Test Video - Awesome Movie
+../real_video_test_files/my_movie.mp4

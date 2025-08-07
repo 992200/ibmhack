@@ -1,0 +1,6 @@
+Title: Different Song
+Artist: Another Artist
+Album: Another Album
+Year: 2023
+Genre: Rock
+Duration: 4:30

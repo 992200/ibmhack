@@ -1,0 +1,16 @@
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\model\Rule.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\model\User.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\config\SecurityConfig.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\model\ApplicationFile.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\repository\CategoryRepository.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\repository\RuleRepository.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\controller\AuthController.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\ApplicationManagerApplication.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\service\FileScannerService.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\model\Category.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\service\RuleCategorizationService.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\controller\ApplicationManagerController.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\service\UserService.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\service\DuplicateDetectorService.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\repository\ApplicationFileRepository.java
+D:\IBM_Hackerthonn\IBM_Hackerthon\src\main\java\com\example\appmanager\repository\UserRepository.java

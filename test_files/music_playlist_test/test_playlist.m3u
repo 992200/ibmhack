@@ -1,0 +1,7 @@
+#EXTM3U
+#EXTINF:180,Test Artist - My Favorite Song
+../music_test_files/song1.wav
+#EXTINF:180,Test Artist - Awesome Track
+../music_test_files/my_favorite_track.wav
+#EXTINF:270,Another Artist - Different Song
+../music_test_files/different_song.wav

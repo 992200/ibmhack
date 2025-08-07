@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: appsense-duplicate-finder
+    env: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/IBM_Hackerthon-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb+srv://sethu:1234@cluster0.dbntwx8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - key: SPRING_DATA_MONGODB_DATABASE
+        value: appsense_users
+      - key: SPRING_MAIN_ALLOW_CIRCULAR_REFERENCES
+        value: true
+      - key: SERVER_PORT
+        value: 10000
+    healthCheckPath: /
+    autoDeploy: true 

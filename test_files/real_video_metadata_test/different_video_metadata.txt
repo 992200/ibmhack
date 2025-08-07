@@ -1,0 +1,8 @@
+Title: Different Video
+Duration: 00:05:00
+Resolution: 640x480
+Format: AVI
+Codec: XVID
+Bitrate: 2000 kbps
+FPS: 25
+File Size: 2.5 MB

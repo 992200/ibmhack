@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>AppSense: Duplicate Detection Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-section {
+            padding: 40px 0;
+            text-align: center;
+            color: white;
+        }
+        .duplicates-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .table {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .table thead th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+        }
+        .table tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+        .hash-header-row {
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            font-weight: 600;
+            color: #1976d2;
+        }
+        .hash-header-row td {
+            border: none;
+            padding: 15px;
+        }
+        .btn {
+            border-radius: 10px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            border: none;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .form-check-input {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            border: 2px solid #667eea;
+        }
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        .file-info {
+            font-size: 0.9rem;
+        }
+        .file-path {
+            color: #6c757d;
+            font-size: 0.8rem;
+            word-break: break-all;
+        }
+        .file-size {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        .alert {
+            border-radius: 15px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        .no-duplicates {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+        .no-duplicates i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dee2e6;
+        }
+        
+        /* Enhanced similarity badges */
+        .similarity-badge {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .similarity-high {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .similarity-medium {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+        }
+        
+        .similarity-low {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        /* Enhanced file info */
+        .file-info-enhanced {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        /* Enhanced table styling */
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            transform: translateX(5px);
+        }
+        .select-all-section {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Enhanced Statistics Cards */
+        .stat-card-small {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card-small:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-content .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.2rem;
+        }
+        
+        .stat-content .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
+        <div class="container">
+            <a class="navbar-brand" href="/index">
+                <i class="fas fa-brain me-2"></i>
+                AppSense
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/duplicates">
+                    <i class="fas fa-copy me-1"></i>
+                    Duplicates
+                </a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-light">
+                        <i class="fas fa-sign-out-alt me-1"></i>
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-section">
+            <h1 class="display-4 mb-3">
+                <i class="fas fa-brain me-3"></i>
+                AppSense: Duplicate Detection Results
+            </h1>
+            <p class="lead">AI-Powered Duplicate Detection & Management</p>
+        </div>
+
+        <div class="duplicates-card">
+            <div th:if="${message}" class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${message}"></span>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Show message when no duplicates -->
+            <div th:if="${duplicates == null or #maps.isEmpty(duplicates)}" class="no-duplicates">
+                <i class="fas fa-check-circle"></i>
+                <h3>No Duplicates Found!</h3>
+                <p>Great job! Your files are clean and organized.</p>
+            </div>
+
+            <!-- Duplicates table -->
+            <div th:if="${duplicates != null and !#maps.isEmpty(duplicates)}">
+                <!-- Simple Statistics Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="stat-card-small">
+                            <div class="stat-icon">
+                                <i class="fas fa-copy"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" th:text="${#maps.size(duplicates)}">0</div>
+                                <div class="stat-label">Duplicate Groups</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stat-card-small">
+                            <div class="stat-icon">
+                                <i class="fas fa-file"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" th:text="${#maps.size(duplicates)}">0</div>
+                                <div class="stat-label">Total Files</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form th:action="@{/remove}" method="post">
+                    <div class="select-all-section">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()">
+                            <label class="form-check-label fw-bold" for="selectAll">
+                                <i class="fas fa-check-square me-2"></i>
+                                Select All Duplicates
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">
+                                        <i class="fas fa-check me-2"></i>Select
+                                    </th>
+                                    <th><i class="fas fa-fingerprint me-2"></i>Hash</th>
+                                    <th><i class="fas fa-file me-2"></i>Name</th>
+                                    <th><i class="fas fa-map-marker-alt me-2"></i>Path</th>
+                                    <th><i class="fas fa-weight-hanging me-2"></i>Size</th>
+                                    <th><i class="fas fa-percentage me-2"></i>Similarity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Iterate through duplicates map -->
+                                <tr th:if="${duplicates == null or #maps.isEmpty(duplicates)}">
+                                    <td colspan="6" class="text-center text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        No duplicates found
+                                    </td>
+                                </tr>
+                                <th:block th:if="${duplicates != null and !#maps.isEmpty(duplicates)}">
+                                    <th:block th:each="entry : ${duplicates}">
+                                        <th:block th:if="${entry != null and entry.value != null}">
+                                            <!-- Hash header row -->
+                                            <tr class="hash-header-row">
+                                                <td colspan="6">
+                                                    <i class="fas fa-hashtag me-2"></i>
+                                                    <span th:text="'Hash: ' + ${entry.key}"></span>
+                                                </td>
+                                            </tr>
+                                            
+                                            <!-- File rows for this hash -->
+                                            <tr th:each="file : ${entry.value}" th:if="${file != null}">
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input file-checkbox" 
+                                                               type="checkbox" 
+                                                               name="fileIds" 
+                                                               th:value="${file.id}" />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted" th:text="${file.hash}"></small>
+                                                </td>
+                                                <td>
+                                                    <div class="file-info-enhanced">
+                                                        <div class="file-icon">
+                                                            <i class="fas fa-file"></i>
+                                                        </div>
+                                                        <span th:text="${file.name}"></span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="file-path" th:text="${file.path}"></div>
+                                                </td>
+                                                <td>
+                                                    <span class="file-size" 
+                                                          th:text="${#numbers.formatDecimal(file.size / 1024, 1, 1) + ' KB'}"></span>
+                                                </td>
+                                                <td>
+                                                    <span th:class="${'similarity-badge ' + (file.similarityScore >= 90 ? 'similarity-high' : file.similarityScore >= 70 ? 'similarity-medium' : 'similarity-low')}" 
+                                                          th:text="${#numbers.formatDecimal(file.similarityScore, 1, 1) + '%'}"></span>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                    </th:block>
+                                </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-danger" id="removeSelectedBtn" onclick="showDeleteConfirmation()">
+                            <i class="fas fa-trash-alt me-2"></i>
+                            Remove Selected (<span id="selectedCount">0</span> files, <span id="totalSize">0 KB</span>)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="deleteConfirmationModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Confirm Permanent Deletion
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-warning me-2"></i>
+                            <strong>Warning:</strong> This action cannot be undone!
+                        </div>
+                        <p>You are about to permanently delete <strong id="modalFileCount">0</strong> files with a total size of <strong id="modalTotalSize">0 KB</strong>.</p>
+                        <p class="text-muted mb-0">These files will be permanently removed from your system and cannot be recovered.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                            <i class="fas fa-trash-alt me-2"></i>
+                            Delete Permanently
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleAllCheckboxes() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const fileCheckboxes = document.querySelectorAll('.file-checkbox');
+            
+            fileCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            
+            updateSelectedInfo();
+        }
+
+        function updateSelectedInfo() {
+            const selectedCheckboxes = document.querySelectorAll('.file-checkbox:checked');
+            const selectedCount = selectedCheckboxes.length;
+            
+            let totalSizeBytes = 0;
+            selectedCheckboxes.forEach(checkbox => {
+                const fileId = checkbox.value;
+                const fileElement = document.querySelector(`.file-checkbox[value="${fileId}"]`).closest('tr');
+                const sizeElement = fileElement.querySelector('.file-size');
+                const sizeText = sizeElement.textContent.trim();
+                
+                // Parse size with different units
+                const sizeMatch = sizeText.match(/(\d+(?:\.\d+)?)\s*(KB|MB|GB|B)/i);
+                if (sizeMatch) {
+                    const size = parseFloat(sizeMatch[1]);
+                    const unit = sizeMatch[2].toUpperCase();
+                    
+                    switch(unit) {
+                        case 'B':
+                            totalSizeBytes += size;
+                            break;
+                        case 'KB':
+                            totalSizeBytes += size * 1024;
+                            break;
+                        case 'MB':
+                            totalSizeBytes += size * 1024 * 1024;
+                            break;
+                        case 'GB':
+                            totalSizeBytes += size * 1024 * 1024 * 1024;
+                            break;
+                    }
+                }
+            });
+            
+            // Format total size
+            let totalSizeText;
+            if (totalSizeBytes < 1024) {
+                totalSizeText = `${totalSizeBytes} B`;
+            } else if (totalSizeBytes < 1024 * 1024) {
+                totalSizeText = `${(totalSizeBytes / 1024).toFixed(1)} KB`;
+            } else if (totalSizeBytes < 1024 * 1024 * 1024) {
+                totalSizeText = `${(totalSizeBytes / (1024 * 1024)).toFixed(1)} MB`;
+            } else {
+                totalSizeText = `${(totalSizeBytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+            }
+            
+            document.getElementById('selectedCount').textContent = selectedCount;
+            document.getElementById('totalSize').textContent = totalSizeText;
+            
+            // Update modal info
+            document.getElementById('modalFileCount').textContent = selectedCount;
+            document.getElementById('modalTotalSize').textContent = totalSizeText;
+            
+            // Enable/disable remove button
+            const removeBtn = document.getElementById('removeSelectedBtn');
+            if (selectedCount > 0) {
+                removeBtn.disabled = false;
+                removeBtn.classList.remove('btn-secondary');
+                removeBtn.classList.add('btn-danger');
+            } else {
+                removeBtn.disabled = true;
+                removeBtn.classList.remove('btn-danger');
+                removeBtn.classList.add('btn-secondary');
+            }
+        }
+
+        // Add event listeners to individual checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileCheckboxes = document.querySelectorAll('.file-checkbox');
+            fileCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedInfo);
+            });
+            
+            // Initial update
+            updateSelectedInfo();
+        });
+
+        function showDeleteConfirmation() {
+            const selectedCount = document.querySelectorAll('.file-checkbox:checked').length;
+            if (selectedCount === 0) {
+                alert('Please select files to delete.');
+                return;
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+            modal.show();
+        }
+
+        function confirmDelete() {
+            const selectedFileIds = Array.from(document.querySelectorAll('.file-checkbox:checked')).map(checkbox => checkbox.value);
+            
+            // Create form data
+            const formData = new FormData();
+            selectedFileIds.forEach(id => {
+                formData.append('fileIds', id);
+            });
+            
+            // Submit form
+            fetch('/remove', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Error deleting files. Please try again.');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting files. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>
