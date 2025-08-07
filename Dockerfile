@@ -1,4 +1,3 @@
-# Use OpenJDK 17 as base image
 FROM openjdk:17-jdk-slim
 
 # Set working directory
@@ -8,6 +7,9 @@ WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
+# Add execute permissions to mvnw
+RUN chmod +x mvnw
+
 # Download dependencies
 RUN ./mvnw dependency:go-offline -B
 
@@ -15,19 +17,7 @@ RUN ./mvnw dependency:go-offline -B
 COPY src ./src
 
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw package -DskipTests
 
-# Create a non-root user
-RUN addgroup --system javauser && adduser --system --ingroup javauser javauser
-
-# Change ownership of the app directory
-RUN chown -R javauser:javauser /app
-
-# Switch to non-root user
-USER javauser
-
-# Expose port
-EXPOSE 8080
-
-# Set the entry point
-ENTRYPOINT ["java", "-jar", "target/IBM_Hackerthon-0.0.1-SNAPSHOT.jar"] 
+# Set the startup command
+CMD ["java", "-jar", "target/*.jar"]
