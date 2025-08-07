@@ -1,7 +1,7 @@
 services:
   - type: web
     name: appsense-duplicate-finder
-    runtime: java
+    env: java
     buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/IBM_Hackerthon-0.0.1-SNAPSHOT.jar
     envVars:
