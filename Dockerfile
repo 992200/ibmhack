@@ -19,5 +19,5 @@ COPY src ./src
 # Build the application
 RUN ./mvnw package -DskipTests
 
-# Set the startup command
-CMD ["java", "-jar", "target/*.jar"]
+# Set the startup command with the exact jar name
+CMD ["java", "-jar", "target/appmanager-0.0.1-SNAPSHOT.jar"]
